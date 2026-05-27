@@ -1,15 +1,9 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom"
-
-
 import Gestao from "./components"
-
-// páginas
 import Gestao from "./pages/Gestao"
-
 import Dashboard from "./pages/Dashboard"
 
 function App() {
-
   return (
     <BrowserRouter>
 
@@ -48,7 +42,7 @@ function App() {
       <Routes>
 
         {/* página principal */}
-        <Route path="/" element={<Gestao />} />
+         <Route path="/" element={<Gestao />} /> 
 
         {/* dashboard */}
         <Route path="/dashboard" element={<Dashboard />} />

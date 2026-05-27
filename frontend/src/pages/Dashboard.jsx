@@ -1,15 +1,35 @@
+// hook dos alunos
+import useAlunos from "../hooks/useAlunos"
+
 function Dashboard() {
 
-  // dados mockados por enquanto
-  const totalAlunos = 35
-  const notebooksOcupados = 35
-  const notebooksLivres = 165
+// dados vindos do hook
+const {
+  alunos,
+  carregando,
+  erro
+} = useAlunos()
+
+// estatísticas vindas do hook
+const totalAlunos = alunos.length 
+const notebooksOcupados = alunos.length
+const notebooksLivres = 200 - alunos.length
 
   return (
     <div className="dashboard-container">
 
       <h1>Dashboard</h1>
 
+      {/* loading */}
+      {carregando && (
+        <p>Carregando dados...</p>
+      )}
+
+      {/* erro */}
+      {erro && (
+        <p>{erro}</p>
+      )}
+      
       {/* cards */}
       <div className="cards">
 
