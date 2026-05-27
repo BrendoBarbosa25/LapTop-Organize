@@ -1,16 +1,50 @@
-# React + Vite
+# Sistema de Gestão de Notebooks
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Descrição
+Sistema para gerenciamento de notebooks de alunos da turma da manhã.
 
-Currently, two official plugins are available:
+Cada aluno pode escolher um notebook de 1 a 200.
+Um notebook não pode ser utilizado por mais de um aluno.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+O sistema possui:
+- CRUD completo de alunos
+- Dashboard com estatísticas
+- Validações no backend
+- React Router
+- Hook personalizado
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tecnologias
 
-## Expanding the ESLint configuration
+### Frontend
+- React
+- Vite
+- React Router DOM
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+### Backend
+- Node.js
+- Express
+
+---
+
+## Funcionalidades
+- Cadastrar aluno
+- Editar aluno
+- Deletar aluno
+- Impedir notebook repetido
+- Dashboard de ocupação
+
+---
+
+## Estrutura
+
+frontend/
+backend/
+
+---
+
+## Integrantes
+- Fulano
+- Ciclano
+- Beltrano
