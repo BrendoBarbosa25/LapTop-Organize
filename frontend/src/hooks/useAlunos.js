@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-const BASE_URL = 'http://localhost:3000';
+const BASE_URL = 'http://localhost:3000/registros';
 
 function useAlunos() {
   const [alunos, setAlunos] = useState([]);
@@ -19,12 +19,12 @@ function useAlunos() {
     }
   }, [erro, sucesso]); //MONITORA essas duas variaveis, é o gatilho pra começar. O codigo so funciona quando essas consts sao ativadas
 
-
+//buscar alunos
    async function buscarAlunos() {
     setCarregando(true);  //mostra a mensagem de carregamento 
     try {
-// faz a requisição pra URL /alunos. Await serve pra esperar terminar isso pra depois ir pra outra linha
-      const resposta = await fetch(`${BASE_URL}/alunos`); 
+// faz a requisição pra URL . Await serve pra esperar terminar isso pra depois ir pra outra linha
+      const resposta = await fetch(BASE_URL); 
       const dados = await resposta.json(); //transforma a resposta do servidor em .json 
       setAlunos(dados); // serve pra atualizar a lista de alunos
     } catch (e) {
@@ -39,8 +39,8 @@ function useAlunos() {
   async function criarAluno(dadosAluno) { 
     setCarregando(true); //mensagem de carregamento
     try {
-// faz a requisição pra URL /alunos. Await serve pra esperar terminar isso pra depois ir pra outra linha
-      const resposta = await fetch(`${BASE_URL}/alunos`, { 
+// faz a requisição pra URL . Await serve pra esperar terminar isso pra depois ir pra outra linha
+      const resposta = await fetch(BASE_URL, { 
         method: "POST", //isso aqui diz ao servidor que vamos ENVIAR um dado novo 
         headers: { "Content-Type": "application/json" },  
         body: JSON.stringify(dadosAluno), 
@@ -71,7 +71,7 @@ function useAlunos() {
   async function editarAluno(id, dadosAluno) {
     setCarregando(true);
     try {
-      const resposta = await fetch(`${BASE_URL}/alunos/${id}`, {
+      const resposta = await fetch(`${BASE_URL}/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(dadosAluno),
@@ -101,7 +101,7 @@ function useAlunos() {
     async function deletarAluno(id) {
     setCarregando(true);
     try {
-      const resposta = await fetch(`${BASE_URL}/alunos/${id}`, {
+      const resposta = await fetch(`${BASE_URL}/${id}`, {
         method: "DELETE",
       });
 
@@ -122,6 +122,10 @@ function useAlunos() {
       setCarregando(false);
     }
   }
+
+  useEffect(() => {
+    buscarAlunos();
+  }, []);
 
   return {
     alunos,
