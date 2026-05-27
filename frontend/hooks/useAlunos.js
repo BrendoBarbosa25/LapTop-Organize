@@ -23,6 +23,7 @@ function useAlunos() {
    async function buscarAlunos() {
     setCarregando(true);  //mostra a mensagem de carregamento 
     try {
+        
       const resposta = await fetch(`${BASE_URL}/alunos`); // faz a requisição pra URL /alunos. Await serve pra esperar terminar isso pra depois ir pra outra linha
       const dados = await resposta.json(); //transforma a resposta do servidor em .json 
       setAlunos(dados); // serve pra atualizar a lista de alunos
