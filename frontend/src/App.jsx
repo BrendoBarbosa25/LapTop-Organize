@@ -1,6 +1,5 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom"
-import Gestao from "./components"
-import Gestao from "./pages/Gestao"
+import Gestao from "./components/Gestao"
 import Dashboard from "./pages/Dashboard"
 
 function App() {
