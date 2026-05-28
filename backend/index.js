@@ -17,7 +17,7 @@ servidor.post('/registros', (req, res) => {
     const duplicataId = registros.find(r => r.notebookId.trim() === dados.notebookId.trim())
 
     //Checagens de válidade do nome do usuário
-    if (!dados.nome) {
+    if (!dados.nome || dados.nome.trim() === "") {
         //Checa se o campo está vazio
         return res.status(400).json({
             erro: "Campo de nome é Obrigatório!"
@@ -132,7 +132,7 @@ servidor.put("/registros/:id", (req, res) => {
     }
 
     //Checagens de válidade do nome do usuário
-    if (!dados.nome) {
+    if (!dados.nome || dados.nome.trim()) {
         //Checa se o campo está vazio
         return res.status(400).json({
             erro: "Campo de nome é Obrigatório!"
