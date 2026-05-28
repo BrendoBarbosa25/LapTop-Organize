@@ -402,7 +402,6 @@ function Gestao() {
 
 export default Gestao;
 
-```js id="jlwm4n"
 /*
 GESTAO =============================
 
@@ -481,5 +480,4 @@ e dos notebooks utilizados no laboratório.
 
 PELO AMOR DE DEUS APRESENTA DIREITO EU QUERO NOTA!!!!!!!!!!!!!!
 */
-```
 
