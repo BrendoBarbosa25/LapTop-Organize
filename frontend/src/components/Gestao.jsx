@@ -1,7 +1,8 @@
-import { useEffect, useState, useRef, useSyncExternalStore } from "react";
+import { useEffect, useState, useRef, } from "react";
+import useAlunos from "../hooks/useAlunos";
 import InputField from "./InputField";
 
-function Formulario(){
+function Gestao(){
     const nomeRef = useRef
     const [user, setUser] = useState(nome, email, notebook, senha)
     const [erroForm, setErroForm] = useState('')
@@ -69,3 +70,5 @@ return(
 </div>
 
 )}
+
+export default Gestao
