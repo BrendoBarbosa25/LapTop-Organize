@@ -46,7 +46,7 @@ function useAlunos() {
         body: JSON.stringify(dadosAluno), 
       });
 
-      const dados = await resposta.json(); 
+      const dados = await resposta.json(); //traduz a resposta do servidor 
 
 //o erro vem antes por segurança 
 //barra primeiro pra impedir que execute o que vem depois
@@ -69,63 +69,63 @@ function useAlunos() {
 
     // Edita um aluno existente
   async function editarAluno(id, dadosAluno) {
-    setCarregando(true);
-    try {
-      const resposta = await fetch(`${BASE_URL}/${id}`, {
-        method: "PUT",
+    setCarregando(true); // mostra o efeito de carregament na tela
+    try {  
+      const resposta = await fetch(`${BASE_URL}/${id}`, { 
+        method: "PUT", // PUT fala pro servidor que vamos substituir um dado existente
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(dadosAluno),
+        body: JSON.stringify(dadosAluno),  
       });
 
-      const dados = await resposta.json();
+      const dados = await resposta.json(); // traduz a resposta do servidor 
 
-      if (!resposta.ok) {
-        setErro(dados.erro);
+      if (!resposta.ok) { //se der erro...
+        setErro(dados.erro); // mostra o erro traduzido 
         return false;
       }
 
       setSucesso("Aluno atualizado com sucesso!");
-      await buscarAlunos();
-      return true;
+      await buscarAlunos(); // puxa a lista nova de alunos e mostra na tela sem dar f5, useState força isso
+      return true; // mostra o efeito de carregamento na tela
     } catch (e) {
-      setErro("Erro ao editar aluno.");
+      setErro("Erro ao editar aluno."); 
       return false;
-    } finally {
-      setCarregando(false);
+    } finally {    // isso aqui acontece independente do que ocorrer
+      setCarregando(false); // tira do estado de carregamento
     }
   }
 
   
 
   //deleta aluno
-    async function deletarAluno(id) {
-    setCarregando(true);
+    async function deletarAluno(id) { // deleta o aluno pelo id 
+    setCarregando(true); // mostra o estado de carregamento 
     try {
-      const resposta = await fetch(`${BASE_URL}/${id}`, {
-        method: "DELETE",
+      const resposta = await fetch(`${BASE_URL}/${id}`, { 
+        method: "DELETE", //diz pro seridor que vamos deletar
       });
 
-      const dados = await resposta.json();
+      const dados = await resposta.json();   // traduz a resposta do servidor 
 
-      if (!resposta.ok) {
-        setErro(dados.erro);
+      if (!resposta.ok) { 
+        setErro(dados.erro); // mostra o erro
         return false;
       }
 
-      setSucesso("Aluno excluído com sucesso!");
-      await buscarAlunos();
-      return true;
+      setSucesso("Aluno excluído com sucesso!"); 
+      await buscarAlunos(); // puxa a lista nova de alunos e mostra na tela sem dar f5, useState força isso
+      return true; 
     } catch (e) {
       setErro("Erro ao excluir aluno.");
       return false;
-    } finally {
-      setCarregando(false);
+    } finally { // isso aqui acontece independente de dar erro ou sucesso   
+      setCarregando(false); // desliga o carregamento 
     }
   }
 
   useEffect(() => {
-    buscarAlunos();
-  }, []);
+    buscarAlunos(); // chama a funcao que busca os alunos 
+  }, []); // [] vazios fazem com que isso rode apenas uma vez quando a pagina abrir 
 
   return {
     alunos,
@@ -140,8 +140,3 @@ function useAlunos() {
 }
 
 export default useAlunos;
-
-
-
-
-
