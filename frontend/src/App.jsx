@@ -1,34 +1,41 @@
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom"
+
+// páginas do sistema
 import Gestao from "./components/Gestao"
-import Dashboard from "./components/Gestao"
+import Dashboard from "./components/Dashboard"
 
 function App() {
   return (
+//sistema de paginas no site
     <BrowserRouter>
 
-      {/* navbar */}
+      {/* navbar principal */}
       <nav className="navbar">
 
         {/* logo */}
         <div className="logo">
 
+          {/* símbolo */}
           <span className="logo-symbol">
             #
           </span>
 
+          {/* nome */}
           <span className="logo-text">
             CERQUILHA
           </span>
 
         </div>
 
-        {/* links */}
+        {/* links de navegação */}
         <div className="nav-links">
 
+          {/* abre a rota principal */}
           <Link to="/">
             Gestão
           </Link>
 
+          {/* abre a rota dashboard */}
           <Link to="/dashboard">
             Dashboard
           </Link>
@@ -37,19 +44,25 @@ function App() {
 
       </nav>
 
-      {/* rotas */}
+      {/* container das rotas */}
       <Routes>
 
-        {/* página principal */}
-         <Route path="/" element={<Gestao />} /> 
+        {/* rota principal */}
+        <Route
+          path="/"
+          element={<Gestao />}
+        />
 
-        {/* dashboard */}
-        <Route path="/dashboard" element={<Dashboard />} />
+        {/* rota dashboard */}
+        <Route
+          path="/dashboard"
+          element={<Dashboard />}
+        />
 
       </Routes>
 
     </BrowserRouter>
-    
+
   )
 }
 
@@ -59,36 +72,38 @@ export default App
 /*
 REACT ROUTER
 
-Nesse arquivo fica a parte de navegação do sistema
+O React Router foi usado pra criar a navegação entre as páginas do sistema.
 
-O React Router foi usado pra separar as telas do projeto e permitir trocar de página sem
-precisar recarregar o site.
-
-As rotas atuais são:
+Rotas atuais:
 
 "/"
-abre a tela de Gestão
+abre Gestão
 
 "/dashboard"
-abre a tela Dashboard
+abre Dashboard
 
-O BrowserRouter envolve toda aplicação
-pra ativar o sistema de rotas.
+BrowserRouter
+ativa o sistema de rotas
 
-O Routes organiza todas as rotas existentes.
+Routes
+agrupa todas as rotas
 
-Cada Route define:
-- o caminho da URL
-- qual componente será aberto
+Route
+- define:
+URL
+componente renderizado
 
-O Link foi usado nos botões da navbar
-pra navegar entre as páginas de forma rápida
-e sem reload.
+Link
+- usado pra navegar entre páginas
+- funciona sem recarregar o site
 
-Quando o usuário clica em algum link,
-o React Router identifica a rota e renderiza
-somente o componente necessário.
+Quando o usuário clica em um Link,
+o React Router renderiza somente
+o componente necessário.
 
-Isso deixou a navegação mais fluida e o projeto mais organizado.
+Isso deixou a navegação:
+- mais rápida
+- mais organizada
+- mais fluida
 
 */
