@@ -66,55 +66,101 @@ function Gestao() {
     }, [sucessoForm]);
 
     // envia formulário
-    const handlerSubmit = async (e) => {
+const handlerSubmit = async (e) => {
 
-        e.preventDefault();
+    e.preventDefault();
 
-        setErroForm("");
-        setSucessoForm(false);
+    setErroForm("");
+    setSucessoForm(false);
 
-        // valida senha
-        if (user.senha.length < 7) {
+    const nome = user.nome.trim();
+    const email = user.email.trim();
 
-            setErroForm(
-                "Senha inválida, deve conter mínimo de 7 caracteres"
-            );
+    // ---- validações de NOME ----
+    if (!nome) {
+        setErroForm("Campo de nome é Obrigatório!");
+        return;
+    }
 
-            return;
-        }
+    if (nome.length < 3 || nome.length > 100) {
+        setErroForm("Nome inválido, deve conter entre 3-100 caracteres");
+        return;
+    }
 
-        // transforma notebook em número
-        const numNotebook = Number(user.notebookId);
+    const duplicataNome = alunos.find(a =>
+        a.id !== indiceEditando &&
+        a.nome.toLowerCase().trim() === nome.toLowerCase()
+    );
 
-        // valida notebook
-        if (
-            isNaN(numNotebook)
-            || numNotebook < 1
-            || numNotebook > 200
-        ) {
+    if (duplicataNome) {
+        setErroForm("Usuário já cadastrado");
+        return;
+    }
 
-            setErroForm(
-                "Número do notebook inválido! Deve ser entre 1 e 200."
-            );
+    // ---- validações de EMAIL ----
+    if (!email) {
+        setErroForm("Campo de email é Obrigatório!");
+        return;
+    }
 
-            return;
-        }
+    if (email.split('.').length < 2 || email.split('@').length < 2) {
+        setErroForm("Email inválido!");
+        return;
+    }
 
-        // se estiver editando
-        if (indiceEditando !== null) {
+    const duplicataEmail = alunos.find(a =>
+        a.id !== indiceEditando &&
+        a.email.toLowerCase().trim() === email.toLowerCase()
+    );
 
-            await editarAluno(
-                indiceEditando,
-                user
-            );
+    if (duplicataEmail) {
+        setErroForm("Usuário já cadastrado");
+        return;
+    }
 
-        } else {
+    // ---- validações de SENHA ----
+    if (!user.senha) {
+        setErroForm("Campo de senha é Obrigatório!");
+        return;
+    }
 
-            // cria aluno novo
-            await criarAluno(user);
-        }
-    };
+    if (user.senha.length < 7) {
+        setErroForm("Senha inválida, deve conter mínimo de 7 caracteres");
+        return;
+    }
 
+    // ---- validações de NOTEBOOK ----
+    const numNotebook = Number(user.notebookId);
+
+    if (isNaN(numNotebook) || numNotebook < 1 || numNotebook > 200) {
+        setErroForm("Número do notebook inválido! Deve ser entre 1 e 200.");
+        return;
+    }
+
+    const duplicataId = alunos.find(a =>
+        a.id !== indiceEditando &&
+        String(a.notebookId).trim() === String(user.notebookId).trim()
+    );
+
+    if (duplicataId) {
+        setErroForm("Notebook indisponível");
+        return;
+    }
+
+    // se estiver editando
+    if (indiceEditando !== null) {
+
+        await editarAluno(
+            indiceEditando,
+            user
+        );
+
+    } else {
+
+        // cria aluno novo
+        await criarAluno(user);
+    }
+};
     // carrega dados do aluno no formulário
     const handlerEditar = (id) => {
 
