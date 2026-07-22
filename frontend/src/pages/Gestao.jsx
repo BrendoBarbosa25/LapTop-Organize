@@ -66,101 +66,101 @@ function Gestao() {
     }, [sucessoForm]);
 
     // envia formulário
-const handlerSubmit = async (e) => {
+    const handlerSubmit = async (e) => {
 
-    e.preventDefault();
+        e.preventDefault();
 
-    setErroForm("");
-    setSucessoForm(false);
+        setErroForm("");
+        setSucessoForm(false);
 
-    const nome = user.nome.trim();
-    const email = user.email.trim();
+        const nome = user.nome.trim();
+        const email = user.email.trim();
 
-    // ---- validações de NOME ----
-    if (!nome) {
-        setErroForm("Campo de nome é Obrigatório!");
-        return;
-    }
+        // ---- validações de NOME ----
+        if (!nome) {
+            setErroForm("Campo de nome é Obrigatório!");
+            return;
+        }
 
-    if (nome.length < 3 || nome.length > 100) {
-        setErroForm("Nome inválido, deve conter entre 3-100 caracteres");
-        return;
-    }
+        if (nome.length < 3 || nome.length > 100) {
+            setErroForm("Nome inválido, deve conter entre 3-100 caracteres");
+            return;
+        }
 
-    const duplicataNome = alunos.find(a =>
-        a.id !== indiceEditando &&
-        a.nome.toLowerCase().trim() === nome.toLowerCase()
-    );
-
-    if (duplicataNome) {
-        setErroForm("Usuário já cadastrado");
-        return;
-    }
-
-    // ---- validações de EMAIL ----
-    if (!email) {
-        setErroForm("Campo de email é Obrigatório!");
-        return;
-    }
-
-    if (email.split('.').length < 2 || email.split('@').length < 2) {
-        setErroForm("Email inválido!");
-        return;
-    }
-
-    const duplicataEmail = alunos.find(a =>
-        a.id !== indiceEditando &&
-        a.email.toLowerCase().trim() === email.toLowerCase()
-    );
-
-    if (duplicataEmail) {
-        setErroForm("Usuário já cadastrado");
-        return;
-    }
-
-    // ---- validações de SENHA ----
-    if (!user.senha) {
-        setErroForm("Campo de senha é Obrigatório!");
-        return;
-    }
-
-    if (user.senha.length < 7) {
-        setErroForm("Senha inválida, deve conter mínimo de 7 caracteres");
-        return;
-    }
-
-    // ---- validações de NOTEBOOK ----
-    const numNotebook = Number(user.notebookId);
-
-    if (isNaN(numNotebook) || numNotebook < 1 || numNotebook > 200) {
-        setErroForm("Número do notebook inválido! Deve ser entre 1 e 200.");
-        return;
-    }
-
-    const duplicataId = alunos.find(a =>
-        a.id !== indiceEditando &&
-        String(a.notebookId).trim() === String(user.notebookId).trim()
-    );
-
-    if (duplicataId) {
-        setErroForm("Notebook indisponível");
-        return;
-    }
-
-    // se estiver editando
-    if (indiceEditando !== null) {
-
-        await editarAluno(
-            indiceEditando,
-            user
+        const duplicataNome = alunos.find(a =>
+            a.id !== indiceEditando &&
+            a.nome.toLowerCase().trim() === nome.toLowerCase()
         );
 
-    } else {
+        if (duplicataNome) {
+            setErroForm("Usuário já cadastrado");
+            return;
+        }
 
-        // cria aluno novo
-        await criarAluno(user);
-    }
-};
+        // ---- validações de EMAIL ----
+        if (!email) {
+            setErroForm("Campo de email é Obrigatório!");
+            return;
+        }
+
+        if (email.split('.').length < 2 || email.split('@').length < 2) {
+            setErroForm("Email inválido!");
+            return;
+        }
+
+        const duplicataEmail = alunos.find(a =>
+            a.id !== indiceEditando &&
+            a.email.toLowerCase().trim() === email.toLowerCase()
+        );
+
+        if (duplicataEmail) {
+            setErroForm("Usuário já cadastrado");
+            return;
+        }
+
+        // ---- validações de SENHA ----
+        if (!user.senha) {
+            setErroForm("Campo de senha é Obrigatório!");
+            return;
+        }
+
+        if (user.senha.length < 7) {
+            setErroForm("Senha inválida, deve conter mínimo de 7 caracteres");
+            return;
+        }
+
+        // ---- validações de NOTEBOOK ----
+        const numNotebook = Number(user.notebookId);
+
+        if (isNaN(numNotebook) || numNotebook < 1 || numNotebook > 200) {
+            setErroForm("Número do notebook inválido! Deve ser entre 1 e 200.");
+            return;
+        }
+
+        const duplicataId = alunos.find(a =>
+            a.id !== indiceEditando &&
+            String(a.notebookId).trim() === String(user.notebookId).trim()
+        );
+
+        if (duplicataId) {
+            setErroForm("Notebook indisponível");
+            return;
+        }
+
+        // se estiver editando
+        if (indiceEditando !== null) {
+
+            await editarAluno(
+                indiceEditando,
+                user
+            );
+
+        } else {
+
+            // cria aluno novo
+            await criarAluno(user);
+        }
+    };
     // carrega dados do aluno no formulário
     const handlerEditar = (id) => {
 
@@ -316,7 +316,9 @@ const handlerSubmit = async (e) => {
                             <button
                                 type="button"
                                 className="btn-cancel"
-                                onClick={() => {
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
 
                                     // sai modo edição
                                     setIndiceEditando(null);
@@ -330,11 +332,10 @@ const handlerSubmit = async (e) => {
                                     });
 
                                     setErroForm("");
+                                    setSucessoForm(false); // impede que o efeito de "sucesso" reabra algo
                                 }}
                             >
-
                                 Cancelar edição
-
                             </button>
                         )}
 
@@ -358,8 +359,8 @@ const handlerSubmit = async (e) => {
                         {alunos.map((item) => (
                             <li key={item.id} className="aluno-item">
                                 <div className="aluno-info">
-                                    <span className="aluno-name">{item.nome}</span>
-                                    <span className="aluno-sub">{item.email} • Notebook #{item.notebookId}</span>
+                                    <span className="aluno-name">Nome: {item.nome}</span>
+                                    <span className="aluno-sub"> | Email: {item.email} | Notebook: N° {item.notebookId}</span>
                                 </div>
                                 <div className="aluno-actions">
                                     <button onClick={() => handlerEditar(item.id)} className="btn-edit">Editar</button>
