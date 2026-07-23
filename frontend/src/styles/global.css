@@ -1,107 +1,119 @@
 /* ==========================================================================
-   ESTILIZAÇÃO EXCLUSIVA DO DASHBOARD (MÉDIO E ORGANIZADO)
+   LAYOUT BASE — GESTÃO / DASHBOARD
    ========================================================================== */
 
-/* Organiza os cards lado a lado em uma linha flexível */
-.dashboard-container .cards {
-  display: flex !important;
-  flex-direction: row !important;
-  flex-wrap: wrap !important;
-  gap: 24px !important;
-  justify-content: flex-start !important;
-  align-items: stretch !important;
-  margin-top: 32px !important;
-  width: 100% !important;
-}
-
-/* Redefine o tamanho médio padrão para os cards do dashboard */
-.dashboard-container .card {
-  flex: 1 1 300px !important;
-  /* Tamanho médio ideal */
-  max-width: 360px !important;
-  /* Impede que fiquem gigantes em telas enormes */
-  background: rgba(20, 27, 45, 0.4) !important;
-  border: 1px solid rgba(255, 255, 255, 0.05) !important;
-  border-radius: 16px !important;
-  padding: 24px !important;
-  display: flex !important;
-  flex-direction: row !important;
-  /* Ícone do lado do texto */
-  align-items: center !important;
-  gap: 20px !important;
-  backdrop-filter: blur(16px) !important;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2) !important;
-}
-
-/* Controla o tamanho dos ícones/imagens pretas gigantes */
-.dashboard-container .card img,
-.dashboard-container .card-icon img,
-.dashboard-container .card svg {
-  width: 48px !important;
-  /* Tamanho médio perfeito para o ícone */
-  height: 48px !important;
-  object-fit: contain !important;
-  /* Inverte a cor para branco caso as imagens originais sejam pretas */
-  filter: brightness(0) invert(1) !important;
-  opacity: 0.85;
-}
-
-/* Container do ícone caso você use a div .card-icon */
-.dashboard-container .card-icon {
-  width: 64px !important;
-  height: 64px !important;
-  border-radius: 12px !important;
-  display: flex !important;
-  justify-content: center !important;
-  align-items: center !important;
-  flex-shrink: 0 !important;
-}
-
-/* Organização dos textos internos do card */
-.dashboard-container .card h2 {
-  font-size: 14px !important;
-  font-weight: 500 !important;
-  color: #9ca3af !important;
-  margin-bottom: 4px !important;
-  text-transform: uppercase !important;
-  letter-spacing: 0.5px !important;
-}
-
-.dashboard-container .card p {
-  font-size: 28px !important;
-  font-weight: 700 !important;
-  color: #ffffff !important;
-  margin: 0 !important;
-}
-
-/* Compensa a navbar fixa (agora no topo, não mais lateral) */
 .dashboard-container,
 .management-page {
-  padding-top: 96px;
-  /* 64px da navbar + respiro */
-  padding-left: 48px;
-  padding-right: 48px;
+  padding-left: 5%;
+  padding-right: 5%;
+  max-width: 1600px;
+  margin: 0 auto;
   box-sizing: border-box;
 }
 
-/* Formulário + lista lado a lado */
+.dashboard-container {
+  padding-top: 96px; /* 64px da navbar + respiro */
+}
+
+.dashboard-container h1 {
+  margin-top: 0;
+  margin-bottom: 32px;
+}
+
+/* ==========================================================================
+   GESTÃO — formulário + card do último cadastrado lado a lado
+   ========================================================================== */
+
 .management-page {
   display: flex;
   flex-direction: row;
-  align-items: flex-start;
+  min-height: calc(100vh - 64px);
+  align-items: center;
   gap: 32px;
 }
 
 .form-card {
-  flex: 0 0 420px;
-  /* largura fixa, fica ancorado à esquerda */
-  max-width: 420px;
+  flex: 0 1 32%;
+  min-width: 320px;
+  max-width: 480px;
 }
 
+.form-card label {
+  display: block;
+  font-size: 15px;
+  color: var(--text-h);
+  margin-bottom: 2px;
+}
+
+.form-card input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 14px 16px;
+  font-size: 16px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--code-bg);
+  color: var(--text-h);
+  margin-top: 6px;
+  margin-bottom: 18px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-card input::placeholder {
+  color: var(--text);
+  opacity: 0.6;
+}
+
+.form-card input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-bg);
+}
+
+/* botões do formulário */
+.form-actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.form-actions button[type="submit"] {
+  padding: 14px 28px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+.form-actions button[type="submit"]:hover {
+  filter: brightness(1.1);
+}
+
+.btn-cancel {
+  padding: 14px 20px;
+  font-size: 14px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-cancel:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+/* card do último aluno cadastrado (Gestão) */
 .list-card {
-  flex: 1 1 auto;
-  /* ocupa o restante à direita */
-  min-width: 0;
+  flex: 0 1 32%;
+  min-width: 320px;
+  max-width: 480px;
 }
 
 .aluno-item {
@@ -114,38 +126,52 @@
   margin-bottom: 8px;
 }
 
+.aluno-item--single {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 20px;
+}
+
+.aluno-item--single .aluno-actions {
+  align-self: flex-end;
+}
+
 .aluno-info {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-/* Botões minimalistas de editar/deletar */
+/* botões de editar/deletar — mesmo modelo do "Cadastrar" */
 .aluno-actions {
   display: flex;
-  gap: 6px;
+  gap: 12px;
 }
 
 .btn-edit,
 .btn-delete {
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  color: #9ca3af;
-  font-size: 12px;
-  padding: 4px 10px;
-  border-radius: 6px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  border-radius: 10px;
+  border: none;
+  color: #fff;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: filter 0.2s ease;
 }
 
-.btn-edit:hover {
-  border-color: #3b82f6;
-  color: #3b82f6;
+.btn-edit {
+  background: var(--accent);
 }
 
+.btn-delete {
+  background: #ef4444; /* ação destrutiva, fora da paleta de propósito */
+}
+
+.btn-edit:hover,
 .btn-delete:hover {
-  border-color: #ef4444;
-  color: #ef4444;
+  filter: brightness(1.15);
 }
 
 /* Responsivo: empilha em telas menores */
@@ -154,19 +180,99 @@
     flex-direction: column;
   }
 
-  .form-card {
+  .form-card,
+  .list-card {
     flex: 1 1 auto;
     max-width: 100%;
   }
 }
 
-.btn-edit:hover {
-  border-color: #d97757;
-  color: #d97757;
+/* ==========================================================================
+   DASHBOARD
+   ========================================================================== */
+
+.dashboard-container .cards {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 20px;
+  align-items: stretch;
+  justify-content: flex-start;
 }
 
-.btn-delete:hover {
-  border-color: #ef4444;
-  /* mantém vermelho — ação destrutiva não deve seguir a paleta */
-  color: #ef4444;
+.dashboard-container .card {
+  flex: 1 1 260px;
+  max-width: 320px;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+.dashboard-container .card-icon {
+  width: 48px;
+  height: 48px;
+  flex: 0 0 48px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dashboard-container .card-icon img,
+.dashboard-container .card img {
+  width: 100%;
+  height: 100%;
+  max-width: 48px;
+  max-height: 48px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.85;
+}
+
+.dashboard-container .card h2 {
+  font-size: 14px;
+  font-weight: 500;
+  color: #9ca3af;
+  margin: 0 0 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dashboard-container .card p {
+  font-size: 28px;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+}
+
+/* lista completa de alunos — centralizada e destacada dos cards */
+.dashboard-container .list-card--full {
+  margin: 64px auto 0;
+  max-width: 900px;
+  text-align: center;
+}
+
+.dashboard-container .alunos-list {
+  list-style: none;
+  margin: 24px 0 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+  text-align: left;
+}
+
+.dashboard-container .aluno-item {
+  flex-direction: column;
+  align-items: flex-start;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
 }

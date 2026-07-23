@@ -120,12 +120,17 @@ function Gestao() {
 
         // ---- validações de SENHA ----
         if (!user.senha) {
-            setErroForm("Campo de senha é Obrigatório!");
+            setErroForm("Campo de senha é obrigatório!");
             return;
         }
 
         if (user.senha.length < 7) {
-            setErroForm("Senha inválida, deve conter mínimo de 7 caracteres");
+            setErroForm("Senha inválida, mínimo de 7 caracteres");
+            return;
+        }
+
+        if (!user.senha) {
+            setErroForm("Campo de senha é obrigatório!");
             return;
         }
 
@@ -163,32 +168,36 @@ function Gestao() {
     };
     // carrega dados do aluno no formulário
     const handlerEditar = (id) => {
+        const registro = alunos.find(aluno => aluno.id === id);
 
-        // procura aluno pelo id
-        const registro = alunos.find(
-            aluno => aluno.id === id
-        );
-
-        // coloca dados no formulário
         setUser({
             nome: registro.nome,
             email: registro.email,
-            senha: registro.senha || "",
+            senha: "", // nunca reaproveita a senha existente
             notebookId: registro.notebookId
         });
 
-        // activa modo edição
         setIndiceEditando(id);
 
-        // coloca cursor no input nome
         if (nomeRef.current) {
-
             nomeRef.current.focus();
+        }
+
+        if (indiceEditando === null && !user.senha) {
+            setErroForm("Campo de senha é Obrigatório!");
+            return;
+        }
+
+        if (user.senha && user.senha.length < 7) {
+            setErroForm("Senha inválida, deve conter mínimo de 7 caracteres");
+            return;
         }
     };
 
     // deleta aluno selecionado
-    const handlerDeletar = async (id) => {
+    const handlerDeletar = async (id, nome) => {
+        const confirmou = window.confirm(`Excluir o cadastro de "${nome}"? Essa ação não pode ser desfeita.`);
+        if (!confirmou) return;
 
         await deletarAluno(id);
     };
@@ -199,10 +208,10 @@ function Gestao() {
 
             <div className="form-card">
                 <h2>
-                    Formulário de Cadastro (Alunos)
+                    Cadastro de Alunos
                 </h2>
 
-                {/* loading */}
+
                 {carregando && (
                     <p className="status-message loading">
                         Carregando...
@@ -211,7 +220,7 @@ function Gestao() {
 
                 <form onSubmit={handlerSubmit}>
 
-                    {/* erro local ou erro vindo do backend */}
+
                     {(erroForm || erro) && (
 
                         <p className="status-message error">
@@ -219,7 +228,7 @@ function Gestao() {
                         </p>
                     )}
 
-                    {/* sucesso */}
+
                     {sucessoForm && (
 
                         <p className="status-message success">
@@ -228,7 +237,7 @@ function Gestao() {
                     )}
 
                     <div className="form-grid">
-                        {/* nome */}
+
                         <InputField
                             label="Nome: "
                             type="text"
@@ -247,7 +256,7 @@ function Gestao() {
                             inputRef={nomeRef}
                         />
 
-                        {/* email */}
+
                         <InputField
                             label="E-mail: "
                             type="email"
@@ -264,7 +273,7 @@ function Gestao() {
                             }
                         />
 
-                        {/* senha */}
+
                         <InputField
                             label="Senha: "
                             type="password"
@@ -281,7 +290,7 @@ function Gestao() {
                             }
                         />
 
-                        {/* notebook */}
+
                         <InputField
                             label="Número: "
                             type="number"
@@ -299,7 +308,7 @@ function Gestao() {
                         />
                     </div>
 
-                    {/* botões */}
+
                     <div className="form-actions">
 
                         <Botao
@@ -310,7 +319,7 @@ function Gestao() {
                             }
                         />
 
-                        {/* botão cancelar edição */}
+
                         {indiceEditando !== null && (
 
                             <button
@@ -319,11 +328,7 @@ function Gestao() {
                                 onClick={(e) => {
                                     e.preventDefault();
                                     e.stopPropagation();
-
-                                    // sai modo edição
                                     setIndiceEditando(null);
-
-                                    // limpa formulário
                                     setUser({
                                         nome: '',
                                         email: '',
@@ -332,7 +337,7 @@ function Gestao() {
                                     });
 
                                     setErroForm("");
-                                    setSucessoForm(false); // impede que o efeito de "sucesso" reabra algo
+                                    setSucessoForm(false);
                                 }}
                             >
                                 Cancelar edição
@@ -344,31 +349,33 @@ function Gestao() {
                 </form>
             </div>
 
-            {/* lista de alunos */}
+
+            {/* último aluno cadastrado */}
             <div className="list-card">
 
                 <h3>
-                    Alunos Cadastrados
+                    Último Cadastrado
                 </h3>
 
                 {alunos.length > 0 ? (
 
-                    <ul className="alunos-list">
+                    (() => {
+                        const ultimo = alunos[alunos.length - 1];
 
-                        {/* percorre todos alunos */}
-                        {alunos.map((item) => (
-                            <li key={item.id} className="aluno-item">
+                        return (
+                            <div className="aluno-item aluno-item--single">
                                 <div className="aluno-info">
-                                    <span className="aluno-name">Nome: {item.nome}</span>
-                                    <span className="aluno-sub"> | Email: {item.email} | Notebook: N° {item.notebookId}</span>
+                                    <span className="aluno-name">Nome: {ultimo.nome}</span>
+                                    <span className="aluno-sub"> | Email: {ultimo.email} | Notebook: N° {ultimo.notebookId}</span>
                                 </div>
                                 <div className="aluno-actions">
-                                    <button onClick={() => handlerEditar(item.id)} className="btn-edit">Editar</button>
-                                    <button onClick={() => handlerDeletar(item.id)} className="btn-delete">Deletar</button>
+                                    <button onClick={() => handlerEditar(ultimo.id)} className="btn-edit">Editar</button>
+                                    <button onClick={() => handlerDeletar(ultimo.id, ultimo.nome)} className="btn-delete">Deletar</button>
                                 </div>
-                            </li>
-                        ))}
-                    </ul>
+                            </div>
+                        );
+                    })()
+
                 ) : (
                     <p className="empty-message">Nenhum aluno registrado até o momento.</p>
                 )}

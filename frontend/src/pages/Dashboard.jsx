@@ -3,17 +3,17 @@ import useAlunos from "../hooks/useAlunos"
 
 function Dashboard() {
 
-// dados vindos do hook
-const {
-  alunos,
-  carregando,
-  erro
-} = useAlunos()
+  // dados vindos do hook
+  const {
+    alunos,
+    carregando,
+    erro
+  } = useAlunos()
 
-// estatísticas vindas do hook
-const totalAlunos = alunos.length 
-const notebooksOcupados = alunos.length
-const notebooksLivres = 200 - alunos.length
+  // estatísticas vindas do hook
+  const totalAlunos = alunos.length
+  const notebooksOcupados = alunos.length
+  const notebooksLivres = 200 - alunos.length
 
   return (
     <div className="dashboard-container">
@@ -29,7 +29,7 @@ const notebooksLivres = 200 - alunos.length
       {erro && (
         <p>{erro}</p>
       )}
-      
+
       {/* cards */}
       <div className="cards">
 
@@ -95,10 +95,37 @@ const notebooksLivres = 200 - alunos.length
             <p className="green-text">
               {notebooksLivres}
             </p>
+
           </div>
 
         </div>
 
+            {/* lista completa de alunos */}
+            <div className="list-card list-card--full">
+
+              <h3>
+                Alunos Cadastrados
+              </h3>
+
+              {alunos.length > 0 ? (
+
+                <ul className="alunos-list">
+
+                  {alunos.map((item) => (
+                    <li key={item.id} className="aluno-item">
+                      <div className="aluno-info">
+                        <span className="aluno-name">Nome: {item.nome}</span>
+                        <span className="aluno-sub"> | Email: {item.email} | Notebook: N° {item.notebookId}</span>
+                      </div>
+                    </li>
+                  ))}
+
+                </ul>
+
+              ) : (
+                <p className="empty-message">Nenhum aluno registrado até o momento.</p>
+              )}
+            </div>
       </div>
 
     </div>
