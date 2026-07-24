@@ -100,34 +100,34 @@ function Dashboard() {
 
         </div>
 
-            {/* lista completa de alunos */}
-            <div className="list-card list-card--full">
 
-              <h3>
-                Alunos Cadastrados
-              </h3>
-
-              {alunos.length > 0 ? (
-
-                <ul className="alunos-list">
-
-                  {alunos.map((item) => (
-                    <li key={item.id} className="aluno-item">
-                      <div className="aluno-info">
-                        <span className="aluno-name">Nome: {item.nome}</span>
-                        <span className="aluno-sub"> | Email: {item.email} | Notebook: N° {item.notebookId}</span>
-                      </div>
-                    </li>
-                  ))}
-
-                </ul>
-
-              ) : (
-                <p className="empty-message">Nenhum aluno registrado até o momento.</p>
-              )}
-            </div>
       </div>
+      {/* lista completa de alunos */}
+      <div className="list-card list-card--full">
 
+        <h3>
+          Alunos Cadastrados
+        </h3>
+
+        {alunos.length > 0 ? (
+
+          <ul className="alunos-list">
+
+            {alunos.map((item) => (
+              <li key={item.id} className="aluno-item">
+                <div className="aluno-info">
+                  <span className="aluno-name">Nome: {item.nome}</span>
+                  <span className="aluno-sub"> | Email: {item.email} | Notebook: N° {item.notebookId}</span>
+                </div>
+              </li>
+            ))}
+
+          </ul>
+
+        ) : (
+          <p className="empty-message">Nenhum aluno registrado até o momento.</p>
+        )}
+      </div>
     </div>
   )
 }

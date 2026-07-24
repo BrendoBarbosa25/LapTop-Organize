@@ -1,232 +1,184 @@
 import express from 'express'
 import cors from 'cors'
-//Necessário para funcionamento do server
+import { d1Query } from './db.js'
+
 const servidor = express()
 servidor.use(cors())
 servidor.use(express.json())
 
-const registros = [] //Banco de dados com nome criativo
-let proximoId = 1 // ID automático para cada registro
+// pega qualquer erro não tratado nas rotas async e devolve como JSON
+function comTratamentoDeErro(rota) {
+    return async (req, res) => {
+        try {
+            await rota(req, res)
+        } catch (e) {
+            console.error("Erro na rota:", e.message)
+            res.status(500).json({ erro: "Erro interno no servidor. Tente novamente." })
+        }
+    }
+}
 
 // Rota de POST
-servidor.post('/registros', (req, res) => { 
-    const dados = req.body // pega o corpo da requisição
-
-    //cria constantes para checar possiveis duplicatas
-    const duplicataNome = registros.find(r => r.nome.toLowerCase().trim() === dados.nome.toLowerCase().trim())
-    const duplicataEmail = registros.find(r => r.email.toLowerCase().trim() === dados.email.toLowerCase().trim())
-    const duplicataId = registros.find(r => r.notebookId.trim() === dados.notebookId.trim())
+servidor.post('/registros', comTratamentoDeErro(async (req, res) => {
+    const dados = req.body
 
     //Checagens de válidade do nome do usuário
     if (!dados.nome || dados.nome.trim() === "") {
-        //Checa se o campo está vazio
-        return res.status(400).json({
-            erro: "Campo de nome é Obrigatório!"
-        })
-        
-    } else if(dados.nome.length > 100 || dados.nome.length < 3) {
-        //Checa se o nome contem o número minimo ou maximo de caracteres
-        return res.status(400).json({
-            erro: "Nome inválido, deve conter entre 3-100 caracteres"
-        })
-    } else if (duplicataNome) {
-        //Chama a constante de duplicata para checar se o usuario já existe
-        return res.status(409).json({
-            erro: "Usuário já cadastrado"
-        })
-    } 
+        return res.status(400).json({ erro: "Campo de nome é Obrigatório!" })
+    } else if (dados.nome.length > 100 || dados.nome.length < 3) {
+        return res.status(400).json({ erro: "Nome inválido, deve conter entre 3-100 caracteres" })
+    }
 
     if (!dados.email) {
-        //Checa se o campo está vazio
-        return res.status(400).json({
-            erro: "Campo de email é Obrigatório!"
-        })
+        return res.status(400).json({ erro: "Campo de email é Obrigatório!" })
     } else if (dados.email.split('.').length < 2 || dados.email.split('@').length < 2) {
-        //Faz uma checagem basica de email, se contem um "@" e um "."
-        return res.status(400).json({
-            erro: "Email inválido!"
-        })
-    } else if (duplicataEmail) {
-        //Chama a constante de duplicata para checar se o usuario já existe
-        return res.status(409).json({
-            erro: "Usuário já cadastrado"
-        })
-    } 
+        return res.status(400).json({ erro: "Email inválido!" })
+    }
 
     if (!dados.senha) {
-        //Checa se o usuario criou uma senha
-        return res.status(400).json({
-            erro: "Campo de senha é Obrigatório!"
-        })
+        return res.status(400).json({ erro: "Campo de senha é Obrigatório!" })
     } else if (dados.senha.length < 7) {
-        //Limita a senha para conter 
-        return res.status(400).json({
-            erro: "Senha inválida, deve conter mínimo de 7 caracteres"
-        })
+        return res.status(400).json({ erro: "Senha inválida, deve conter mínimo de 7 caracteres" })
     }
 
     if (!dados.notebookId) {
-        //Basico,  checa se está vazio
-        return res.status(400).json({
-            erro: "Número do notebook inválido!"
-        })
-    } else if (duplicataId) {
-        //Chama a constante de duplicata para checar se o usuario já existe
-        return res.status(409).json({
-            erro: "Notebook indisponível"
-        })
-    } else if(dados.notebookId < 1 || dados.notebookId > 200) {
-        // Faz uma checagem maneira para ver se o notebook tá dentro do valor esperado
-        return res.status(400).json({
-            erro: "Número do notebook inválido!"
-        })
+        return res.status(400).json({ erro: "Número do notebook inválido!" })
+    } else if (dados.notebookId < 1 || dados.notebookId > 200) {
+        return res.status(400).json({ erro: "Número do notebook inválido!" })
     }
 
-    console.log(`Dados da requisição!
-        O que tem no corpo que o front end me mandou : ${dados}`)
-
-    // Adiciona ID único antes de salvar
-    const novoRegistro = {
-        id: proximoId++,
-        ...dados
+    // checagens de duplicidade — agora consultando o D1
+    const duplicataNome = await d1Query(
+        'SELECT id FROM registros WHERE nome = ? COLLATE NOCASE',
+        [dados.nome.trim()]
+    )
+    if (duplicataNome.length > 0) {
+        return res.status(409).json({ erro: "Usuário já cadastrado" })
     }
-    
-    registros.push(novoRegistro) // simulando salvar dados no banco
+
+    const duplicataEmail = await d1Query(
+        'SELECT id FROM registros WHERE email = ? COLLATE NOCASE',
+        [dados.email.trim()]
+    )
+    if (duplicataEmail.length > 0) {
+        return res.status(409).json({ erro: "Usuário já cadastrado" })
+    }
+
+    const duplicataId = await d1Query(
+        'SELECT id FROM registros WHERE notebookId = ?',
+        [dados.notebookId]
+    )
+    if (duplicataId.length > 0) {
+        return res.status(409).json({ erro: "Notebook indisponível" })
+    }
+
+    await d1Query(
+        'INSERT INTO registros (nome, email, senha, notebookId) VALUES (?, ?, ?, ?)',
+        [dados.nome.trim(), dados.email.trim(), dados.senha, dados.notebookId]
+    )
 
     res.status(201).json({
         sucesso: true,
-        mensagem: "Registro Criado Com Sucesso!",
-        dados: novoRegistro
+        mensagem: "Registro Criado Com Sucesso!"
     })
-
-})
+}))
 
 // Rota de GET
-servidor.get("/registros", (req, res) => {
-    res.status(200).json(registros)
-})
+servidor.get("/registros", comTratamentoDeErro(async (req, res) => {
+    const dados = await d1Query('SELECT id, nome, email, notebookId FROM registros')
+    res.status(200).json(dados)
+}))
 
 // Rota DELETE
-servidor.delete("/registros/:id", (req, res) => {
+servidor.delete("/registros/:id", comTratamentoDeErro(async (req, res) => {
     const id = parseInt(req.params.id)
-    
-    // Busca o índice pelo campo id, não pela posição do array
-    const index = registros.findIndex(r => r.id === id)
 
-    if (index === -1) {
-        return res.status(404).json({erro: "Aluno não encontrado!"})
+    const existente = await d1Query('SELECT id FROM registros WHERE id = ?', [id])
+    if (existente.length === 0) {
+        return res.status(404).json({ erro: "Aluno não encontrado!" })
     }
 
-    registros.splice(index, 1)
-    res.status(200).json({ mensagem: "Aluno removido"})
-})
-
+    await d1Query('DELETE FROM registros WHERE id = ?', [id])
+    res.status(200).json({ mensagem: "Aluno removido" })
+}))
 
 // Rota PUT
-servidor.put("/registros/:id", (req, res) => {
+servidor.put("/registros/:id", comTratamentoDeErro(async (req, res) => {
     const id = parseInt(req.params.id)
     const dados = req.body
-    
-    // Busca o índice pelo campo id
-    const index = registros.findIndex(r => r.id === id)
 
-    // Cria uma copia de registros e depois remove o registro que está sendo modificado, serve para checar o unicidade sem gerar conflitos
-    const registrosCopia = [...registros]
-    registrosCopia.splice(index, 1)
-
-    const duplicataNome = registrosCopia.find(r => r.nome.toLowerCase().trim() === dados.nome.toLowerCase().trim())
-    const duplicataEmail = registrosCopia.find(r => r.email.toLowerCase().trim() === dados.email.toLowerCase().trim())
-    const duplicataId = registrosCopia.find(r => r.notebookId.trim() === dados.notebookId.trim())
-
-
-
-    if (index === -1) {
-        return res.status(404).json({erro: "Registro não encontrado!"})
+    const registroAtual = await d1Query('SELECT * FROM registros WHERE id = ?', [id])
+    if (registroAtual.length === 0) {
+        return res.status(404).json({ erro: "Registro não encontrado!" })
     }
 
     //Checagens de válidade do nome do usuário
-    if (!dados.nome || dados.nome.trim() === "") { 
-        //Checa se o campo está vazio
-        return res.status(400).json({
-            erro: "Campo de nome é Obrigatório!"
-        })
-        
-    } else if(dados.nome.length > 100 || dados.nome.length < 3) {
-        //Checa se o nome contem o número minimo ou maximo de caracteres
-        return res.status(400).json({
-            erro: "Nome inválido, deve conter entre 3-100 caracteres"
-        })
-    } else if (duplicataNome) {
-        //Chama a constante de duplicata para checar se o usuario já existe
-        return res.status(409).json({
-            erro: "Usuário já cadastrado"
-        })
-    } 
+    if (!dados.nome || dados.nome.trim() === "") {
+        return res.status(400).json({ erro: "Campo de nome é Obrigatório!" })
+    } else if (dados.nome.length > 100 || dados.nome.length < 3) {
+        return res.status(400).json({ erro: "Nome inválido, deve conter entre 3-100 caracteres" })
+    }
 
     if (!dados.email) {
-        //Checa se o campo está vazio
-        return res.status(400).json({
-            erro: "Campo de email é Obrigatório!"
-        })
+        return res.status(400).json({ erro: "Campo de email é Obrigatório!" })
     } else if (dados.email.split('.').length < 2 || dados.email.split('@').length < 2) {
-        //Faz uma checagem basica de email, se contem um "@" e um "."
-        return res.status(400).json({
-            erro: "Email inválido!"
-        })
-    }  else if (duplicataEmail) {
-        //Chama a constante de duplicata para checar se o usuario já existe
-        return res.status(409).json({
-            erro: "Usuário já cadastrado"
-        })
-    } 
+        return res.status(400).json({ erro: "Email inválido!" })
+    }
 
-    if (!dados.senha) {
-        //Checa se o usuario criou uma senha
-        return res.status(400).json({
-            erro: "Campo de senha é Obrigatório!"
-        })
-    } else if (dados.senha.length < 7) {
-        //Limita a senha para conter 
-        return res.status(400).json({
-            erro: "Senha inválida, deve conter mínimo de 7 caracteres"
-        })
+    // senha é opcional na edição: vazio = mantém a senha atual
+    if (dados.senha && dados.senha.length < 7) {
+        return res.status(400).json({ erro: "Senha inválida, deve conter mínimo de 7 caracteres" })
     }
 
     if (!dados.notebookId) {
-        //Basico,  checa se está vazio
-        return res.status(400).json({
-            erro: "Número do notebook inválido!"
-        })
-    } else if(dados.notebookId < 1 || dados.notebookId > 200) {
-        // Faz uma checagem maneira para ver se o notebook tá dentro do valor esperado
-        return res.status(400).json({
-            erro: "Número do notebook inválido!"
-        })
-    } else if (duplicataId) {
-        //Chama a constante de duplicata para checar se o usuario já existe
-        return res.status(409).json({
-            erro: "Notebook indisponível"
-        })
+        return res.status(400).json({ erro: "Número do notebook inválido!" })
+    } else if (dados.notebookId < 1 || dados.notebookId > 200) {
+        return res.status(400).json({ erro: "Número do notebook inválido!" })
     }
 
-    // Mantém o ID original ao atualizar
-    registros[index] = {
-        id: registros[index].id,
-        ...dados
+    // duplicidade, excluindo o próprio registro
+    const duplicataNome = await d1Query(
+        'SELECT id FROM registros WHERE nome = ? COLLATE NOCASE AND id != ?',
+        [dados.nome.trim(), id]
+    )
+    if (duplicataNome.length > 0) {
+        return res.status(409).json({ erro: "Usuário já cadastrado" })
     }
-    
-    res.status(200).json({mensagem: "Registro Atualizado com Sucesso!", dados: registros[index]})
-})
 
+    const duplicataEmail = await d1Query(
+        'SELECT id FROM registros WHERE email = ? COLLATE NOCASE AND id != ?',
+        [dados.email.trim(), id]
+    )
+    if (duplicataEmail.length > 0) {
+        return res.status(409).json({ erro: "Usuário já cadastrado" })
+    }
+
+    const duplicataId = await d1Query(
+        'SELECT id FROM registros WHERE notebookId = ? AND id != ?',
+        [dados.notebookId, id]
+    )
+    if (duplicataId.length > 0) {
+        return res.status(409).json({ erro: "Notebook indisponível" })
+    }
+
+    const senhaFinal = dados.senha ? dados.senha : registroAtual[0].senha
+
+    await d1Query(
+        'UPDATE registros SET nome = ?, email = ?, senha = ?, notebookId = ? WHERE id = ?',
+        [dados.nome.trim(), dados.email.trim(), senhaFinal, dados.notebookId, id]
+    )
+
+    res.status(200).json({ mensagem: "Registro Atualizado com Sucesso!" })
+}))
 
 // Mensagem básica da página principal do servidor
-servidor.get("/", (req,res) => (
+servidor.get("/", (req, res) => (
     res.status(200).json({
         mensagem: "Servidor está ligado",
         status: "Funcional"
     })
 ))
 
-servidor.listen(3000, () =>{
-    console.log('Servidor hospedado em  '+ 'http://localhost:3000')
+servidor.listen(3000, () => {
+    console.log('Servidor hospedado em  ' + 'http://localhost:3000')
 })
